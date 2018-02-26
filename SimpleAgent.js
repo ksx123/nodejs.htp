@@ -75,7 +75,7 @@ SimpleAgent.prototype.request = function(method, urlname, headers, body, callbac
     }
 
     const METHOD = method.toUpperCase();
-    if (!http.METHODS.includes(METHOD)) {
+    if (http.METHODS.indexOf(METHOD)<0) {
         throw new Error(`invalid method name: ${method}`);
     }
 
@@ -83,7 +83,7 @@ SimpleAgent.prototype.request = function(method, urlname, headers, body, callbac
         throw new Error(`invalid url: ${urlname}`);
     }
     
-    if (METHODS_WITHOUT_PAYLOAD.includes(METHOD)) {
+    if (METHODS_WITHOUT_PAYLOAD.indexOf(METHOD)>=0) {
         body = null;
         let argumentsError = new Error(`invalid arguments, ("${method}", urlname [, headers] [,callback]) needed`);
         switch(args.length) {
@@ -93,7 +93,7 @@ SimpleAgent.prototype.request = function(method, urlname, headers, body, callbac
 
             case 1:
                 if (typeof args[0] == 'object') {
-                    [ headers ] = args;
+                    headers = args[0];
                 }
                 else {
                     throw argumentsError;
@@ -112,7 +112,9 @@ SimpleAgent.prototype.request = function(method, urlname, headers, body, callbac
 
             case 2:
                 if (isNUT(0, 'object')) {
-                    [ headers, body ] = args;
+                    // [ headers, body ] = args;
+                    headers = args[0];
+                    body = args[1];
                 }
                 else {
                     throw argumentsError;
@@ -120,7 +122,7 @@ SimpleAgent.prototype.request = function(method, urlname, headers, body, callbac
                 break;
         
             case 1:
-                [ body ] = args;
+                body = args[0];
                 break;
         }
     }
@@ -203,7 +205,7 @@ SimpleAgent.prototype.request = function(method, urlname, headers, body, callbac
 // According HTTP methods' names, add homonymous method to the prototype.
 http.METHODS.forEach((METHOD_NAME) => {
     let name = METHOD_NAME.toLowerCase();
-    if (METHODS_WITHOUT_PAYLOAD.includes(METHOD_NAME)) {
+    if (METHODS_WITHOUT_PAYLOAD.indexOf(METHOD_NAME)>=0) {
         
         /**
          * @param  {string}    pathname
